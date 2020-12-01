@@ -1,0 +1,12 @@
+{
+  "name": "kraken_tablet",
+  "displayName": "kraken_tablet",
+  "expo": {
+    "name": "kraken_tablet",
+    "slug": "kraken_tablet",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
