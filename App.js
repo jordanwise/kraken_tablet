@@ -9,24 +9,20 @@ import { withAuthenticator } from 'aws-amplify-react-native'
 
 var AWS = require('aws-sdk');
 
+let loginInfo = require('./login_info.json')
+
 let config = {
 	Auth: {
-		// REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
-		identityPoolId: 'eu-west-2:68e02533-edb2-40f2-901e-a5463ee51d8b',
-
-		// // OPTIONAL - Amazon Cognito User Pool ID
-		userPoolId: 'eu-west-2_r5TNW0vRK',
-
-		userPoolWebClientId: '2g920h05c6dvuik8ai3mgqfbo',
-
-		// REQUIRED - Amazon Cognito Region
-		region: 'eu-west-2',
+		identityPoolId: loginInfo.identityPoolId,
+		userPoolId: loginInfo.userPoolId,
+		userPoolWebClientId: loginInfo.appClient,
+		region: loginInfo.region,
 	},
 	Storage: {
         AWSS3: {
-			bucket: 'testclient1bucket', //REQUIRED -  Amazon S3 bucket name
+			bucket: loginInfo.bucketName,
 			region: 'us-east-1',
-			identityPoolId: 'eu-west-2:68e02533-edb2-40f2-901e-a5463ee51d8b',
+			identityPoolId: loginInfo.identityPoolId,
         }
     },
 	Analytics:{
@@ -68,16 +64,17 @@ function App() {
 			if (err) {
 				console.log(err);
 			} else {
-				console.log(AWS.config.credentials.accessKeyId)
-				console.log(AWS.config.credentials.secretAccessKey)
-				console.log(AWS.config.credentials.sessionToken)
+				console.log("Authenticated.")
+				// console.log(AWS.config.credentials.accessKeyId)
+				// console.log(AWS.config.credentials.secretAccessKey)
+				// console.log(AWS.config.credentials.sessionToken)
 			}
 		});
 
 		var s3 = new AWS.S3();
 
 		const params = {
-			Bucket: 'testclient1bucket',
+			Bucket: loginInfo.bucketName,
 			Key: 'app_data/ingredients.json',
 		};
 

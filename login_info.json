@@ -1,0 +1,8 @@
+{
+    "identityPoolId": "eu-west-2:68e02533-edb2-40f2-901e-a5463ee51d8b",
+    "userPoolId": "eu-west-2_r5TNW0vRK",
+    "appClient": "2g920h05c6dvuik8ai3mgqfbo",
+    "region": "eu-west-2",
+    "bucketName": "testclient1bucket",
+    "tableName": ""
+}
