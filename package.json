@@ -8,6 +8,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^5.9.9",
+    "amazon-cognito-identity-js": "^4.5.5",
+    "aws-amplify": "^3.3.11",
+    "aws-amplify-react-native": "^4.2.9",
+    "aws-sdk": "^2.804.0",
     "expo": "~39.0.2",
     "expo-splash-screen": "~0.6.2",
     "expo-status-bar": "~1.0.2",
