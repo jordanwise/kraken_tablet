@@ -1,8 +1,8 @@
 {
-    "identityPoolId": "eu-west-2:68e02533-edb2-40f2-901e-a5463ee51d8b",
-    "userPoolId": "eu-west-2_r5TNW0vRK",
-    "appClient": "2g920h05c6dvuik8ai3mgqfbo",
+    "identityPoolId": "eu-west-2:faf1b417-49d7-49fe-9e1a-140016ae2556",
+    "userPoolId": "eu-west-2_VYwWMNWb3",
+    "appClientId": "6oqof33ql2pusf823b5a706glt",
     "region": "eu-west-2",
-    "bucketName": "testclient1bucket",
-    "tableName": ""
+    "bucketName": "kraken-jordans-chippy",
+    "tableName": "jordans-chippy"
 }

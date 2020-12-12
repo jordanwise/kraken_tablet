@@ -15,13 +15,13 @@ let config = {
 	Auth: {
 		identityPoolId: loginInfo.identityPoolId,
 		userPoolId: loginInfo.userPoolId,
-		userPoolWebClientId: loginInfo.appClient,
+		userPoolWebClientId: loginInfo.appClientId,
 		region: loginInfo.region,
 	},
 	Storage: {
         AWSS3: {
 			bucket: loginInfo.bucketName,
-			region: 'us-east-1',
+			region: loginInfo.region,
 			identityPoolId: loginInfo.identityPoolId,
         }
     },
@@ -40,21 +40,23 @@ function App() {
 	.then( res=>{
 		let accessToken = res.getAccessToken()
 		let jwt = accessToken.getJwtToken()
-		//You can print them to see the full objects
-		console.log(`myAccessToken: ${JSON.stringify(accessToken)}`)
-		console.log(`myJwt: ${jwt}`)
 
 		let idToken = res.getIdToken()
 		let jwtID = idToken.getJwtToken();
 
+		let identityProviderName = 'cognito-idp.'+ loginInfo.region + '.amazonaws.com/' + loginInfo.userPoolId;
 
+		console.log("identity provider name: " + identityProviderName);
 		// This bit explained here: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#getId-property
 		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: 'eu-west-2:68e02533-edb2-40f2-901e-a5463ee51d8b',
+			IdentityPoolId: loginInfo.identityPoolId,
 			Logins: {
-				'cognito-idp.eu-west-2.amazonaws.com/eu-west-2_r5TNW0vRK': jwtID
+				[identityProviderName]: jwtID
 			}
 		});
+
+		// Trust relationship needs to be set:
+		// https://stackoverflow.com/questions/44043289/aws-invalid-identity-pool-configuration-check-assigned-iam-roles-for-this-poo
 
 		AWS.config.region = 'eu-west-2';
 		AWS.config.dynamoDbCrc32 = false;
@@ -65,9 +67,6 @@ function App() {
 				console.log(err);
 			} else {
 				console.log("Authenticated.")
-				// console.log(AWS.config.credentials.accessKeyId)
-				// console.log(AWS.config.credentials.secretAccessKey)
-				// console.log(AWS.config.credentials.sessionToken)
 			}
 		});
 
@@ -75,15 +74,15 @@ function App() {
 
 		const params = {
 			Bucket: loginInfo.bucketName,
-			Key: 'app_data/ingredients.json',
+			Key: 'ingredients.json',
 		};
 
 		s3.getObject(params, (s3Err, data) => {
             if (s3Err) {
 				console.log("s3 download error..")
-				console.log(s3Err);
+				console.log(s3Err); 
                 // return reject(s3Err);
-            }
+			}
 			console.log(`Downloaded ${data.ContentLength} bytes.`);
 			console.log( JSON.parse( JSON.parse(data.Body) ) );
             // return resolve(data.Body);
