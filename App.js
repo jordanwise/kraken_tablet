@@ -1,13 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from "@react-native-community/async-storage";
 
-import Amplify from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import Storage from '@aws-amplify/storage';
+// Navigation
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+
+// State
+import { Provider } from "react-redux";
+import store from "./state/store";
+
+import {
+	downloadIngredients,
+	downloadRecipes,
+} from "./state/actions"
+
+// Authentication
 import { withAuthenticator } from 'aws-amplify-react-native'
 
+// AWS authentication 
 var AWS = require('aws-sdk');
+import Amplify from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
+
+import Home from './home'
+import AllergenIngredientScreen from './allergen_ingredient'
+import AllergenRecipeScreen from './allergen_recipe'
+import SFBBCategory from './sfbb_category.js';
 
 let loginInfo = require('./login_info.json')
 
@@ -33,77 +52,104 @@ let config = {
 Amplify.configure(config);
 Auth.configure(config);
 
-function App() {
-	// Download something from s3
+// Create navigation
+const AppNavigator = createStackNavigator(
+	{
+		Home: {
+			screen: Home
+		},
+		AllergenIngredient: AllergenIngredientScreen,
+		AllergenRecipe: AllergenRecipeScreen,
+		SFBBCategory: SFBBCategory,
+	},
+	{
+		initialRouteName: "Home"
+	}
+);
 
-	Auth.currentSession()
-	.then( res=>{
-		let accessToken = res.getAccessToken()
-		let jwt = accessToken.getJwtToken()
+const AppContainer = createAppContainer(AppNavigator);
 
-		let idToken = res.getIdToken()
-		let jwtID = idToken.getJwtToken();
+// const navigationPersistenceKey = __DEV__ ? "NavigationStateDEV" : null;
+const persistenceKey = "persistenceKey"
 
-		let identityProviderName = 'cognito-idp.'+ loginInfo.region + '.amazonaws.com/' + loginInfo.userPoolId;
-
-		console.log("identity provider name: " + identityProviderName);
-		// This bit explained here: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#getId-property
-		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-			IdentityPoolId: loginInfo.identityPoolId,
-			Logins: {
-				[identityProviderName]: jwtID
-			}
-		});
-
-		// Trust relationship needs to be set:
-		// https://stackoverflow.com/questions/44043289/aws-invalid-identity-pool-configuration-check-assigned-iam-roles-for-this-poo
-
-		AWS.config.region = 'eu-west-2';
-		AWS.config.dynamoDbCrc32 = false;
-
-		AWS.config.credentials.get(function(err)
-		{
-			if (err) {
-				console.log(err);
-			} else {
-				console.log("Authenticated.")
-			}
-		});
-
-		var s3 = new AWS.S3();
-
-		const params = {
-			Bucket: loginInfo.bucketName,
-			Key: 'ingredients.json',
-		};
-
-		s3.getObject(params, (s3Err, data) => {
-            if (s3Err) {
-				console.log("s3 download error..")
-				console.log(s3Err); 
-                // return reject(s3Err);
-			}
-			console.log(`Downloaded ${data.ContentLength} bytes.`);
-			console.log( JSON.parse( JSON.parse(data.Body) ) );
-            // return resolve(data.Body);
-        } );
-	} )
-
-	return (
-		<View style={styles.container}>
-			<Text>Open up App.js to start working on your app! HELLO</Text>
-			<StatusBar style="auto" />
-		</View>
-	);
+const persistNavigationState = async (navState) => {
+	try {
+		console.log("Moving...")
+		await AsyncStorage.setItem(persistenceKey, JSON.stringify(navState))
+	} catch (err) {
+		// handle the error according to your needs
+		console.log(err)
+	}
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-});
+const loadNavigationState = async () => {
+	const jsonString = await AsyncStorage.getItem(persistenceKey)
+	return JSON.parse(jsonString)
+}
+
+// Wrap everything in login authenticator
+
+class App extends React.Component {
+
+	componentDidMount() {
+		// // Request all permissions needed
+		// permissions.requestFileWritePermission();
+
+		// // Download all the data we need
+		// store.dispatch(downloadIngredients());
+		// store.dispatch(downloadRecipes());
+
+		// Download all the data we need
+		this.authenticate().then( () => {
+			store.dispatch(downloadIngredients());
+			store.dispatch(downloadRecipes());
+		})
+		
+	}
+
+	async authenticate() {
+		try {
+			let res = await Auth.currentSession();
+	
+			let accessToken = res.getAccessToken()
+			let jwt = accessToken.getJwtToken()
+	
+			let idToken = res.getIdToken()
+			let jwtID = idToken.getJwtToken();
+	
+			let identityProviderName = 'cognito-idp.'+ loginInfo.region + '.amazonaws.com/' + loginInfo.userPoolId;
+	
+			console.log("identity provider name: " + identityProviderName);
+			// This bit explained here: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html#getId-property
+			AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+				IdentityPoolId: loginInfo.identityPoolId,
+				Logins: {
+					[identityProviderName]: jwtID
+				}
+			});
+	
+			// Trust relationship needs to be set:
+			// https://stackoverflow.com/questions/44043289/aws-invalid-identity-pool-configuration-check-assigned-iam-roles-for-this-poo
+	
+			AWS.config.region = loginInfo.region;
+			AWS.config.dynamoDbCrc32 = false;
+	
+			await AWS.config.credentials.get();
+			console.log("Authenticated.")
+		}
+		catch( err ) {
+			// Authentication failed
+			console.log(err);
+		}
+	}
+
+	render() {
+		return (
+			<Provider store={store}>
+				<AppContainer persistNavigationState={persistNavigationState} loadNavigationState={loadNavigationState} />
+			</Provider>
+		);
+	}
+}
 
 export default withAuthenticator(App)
