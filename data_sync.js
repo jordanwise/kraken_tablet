@@ -1,9 +1,6 @@
 
 import RNFetchBlob from 'rn-fetch-blob'
 
-
-let loginInfo = require('./login_info.json')
-
 var AWS = require('aws-sdk');
 
 /**
@@ -43,8 +40,11 @@ export function readFile(filename) {
  * @return Promise - The promise of the file exists check.
  */
 export function fileExists( filename ) {
+    let dirs = RNFetchBlob.fs.dirs;
+    let path = dirs.MainBundleDir + "/" + filename
+
     // This returns the promise. The promise can be successful but the value returned is false, error is a bad call
-    return RNFetchBlob.fs.exists(filename)
+    return RNFetchBlob.fs.exists(path)
 }
 
 /**
@@ -65,12 +65,38 @@ export function appendJsonFile( filename, newData ) {
 }
 
 /**
+ * Returns promise of an s3 list bucket check for a filename key
+ *
+ * @param {string} filename The file to check.
+ * @return Promise - The promise of the check attempt.
+ */
+export function s3CheckExists(filename, bucketName) {
+    var s3 = new AWS.S3();
+
+    const params = {
+        Bucket: bucketName,
+        Key: filename,
+    };
+    
+    return s3.headObject(params).promise()
+        .then(
+            () => true,
+            err => {
+                if (err.code === 'NotFound') {
+                    return false;
+                }
+                throw err;
+            }
+        );
+}
+
+/**
  * Returns promise of an s3 download
  *
  * @param {string} filename The file to download.
- * @return Promise - The promise of the upload attempt.
+ * @return Promise - The promise of the download attempt.
  */
-export function s3Download(filename) {
+export function s3Download(filename, bucketName ) {
     var s3 = new AWS.S3();
 
     // Promise wrapper explained here: https://medium.com/bithubph/creating-a-promise-wrapper-for-old-callback-api-methods-fa1b03b82a90
@@ -87,7 +113,7 @@ export function s3Download(filename) {
     } );
 
     const params = {
-        Bucket: loginInfo.bucketName,
+        Bucket: bucketName,
         Key: filename,
     };
 
@@ -101,7 +127,7 @@ export function s3Download(filename) {
  * @param {string} filename The file to upload to.
  * @return Promise - The promise of the upload attempt.
  */
-export function s3Upload(data, filename) {
+export function s3Upload(data, filename, bucketName) {
     var s3 = new AWS.S3();
     
     console.log('data: ' + data);
@@ -120,7 +146,7 @@ export function s3Upload(data, filename) {
     } );
 
     const params = {
-        Bucket: loginInfo.bucketName,
+        Bucket: bucketName,
         Key: filename,
         Body: JSON.stringify(data, null, 2)
     };
