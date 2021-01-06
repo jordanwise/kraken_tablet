@@ -54,7 +54,22 @@ class AllergenIngredientScreen extends React.Component {
     }
 
     addIngredient() {
-        if( this.state.newItem  ) {
+        if( this.state.editedItem ) {
+            this.props.addIngredient( this.state.editedItem.current ).then( () => {
+                console.log("Successfully uploaded new ingredient list");
+            })
+            .catch( err => {
+                alert( "Uploading new ingredient list failed:\n" + err );
+            });
+            this.setState( {
+                newItem: null,
+                editedItem: null,
+                edittingItem: false,
+                addingNewItem: false
+            })
+            return
+        }
+        if( this.state.newItem ) {
             if( this.state.newItem.name === "" ) {
                 alert( "Please enter a name");
                 return;
@@ -71,6 +86,7 @@ class AllergenIngredientScreen extends React.Component {
                 addingNewItem: false
             })
         }
+        
     }
 
     editIngredient() {
