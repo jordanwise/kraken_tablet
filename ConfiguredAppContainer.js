@@ -29,7 +29,9 @@ import {
     createIngredientsFile,
     createRecipesFile,
 	downloadIngredients,
-	downloadRecipes,
+    downloadRecipes,
+    createSensorsFile,
+    downloadSensors,
 } from "./state/actions"
 
 // Create navigation
@@ -74,6 +76,7 @@ class ConfiguredAppContainer extends React.Component {
     componentDidMount() {
         // Authenticate user and download app data
         this.authenticate().then(() => {
+            // Initial download/creation of data files required
             return s3CheckExists( 'ingredients.json', this.props.loginInfo.bucketName )
         })
         .then( exists => {
@@ -95,6 +98,18 @@ class ConfiguredAppContainer extends React.Component {
             }
             else {
                 return store.dispatch(downloadRecipes() )
+            }
+        })
+        .then( () => {
+            return s3CheckExists( 'sensors.json', this.props.loginInfo.bucketName )
+        })
+        .then( exists => {
+            if (!exists) {
+                console.log("Need to create sensors.json")
+                return store.dispatch( createSensorsFile() )
+            }
+            else {
+                return store.dispatch( downloadSensors() )
             }
         })
         .then( () => {

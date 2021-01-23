@@ -9,6 +9,7 @@ import {
     DOWNLOADED_INGREDIENTS,
     DOWNLOADED_RECIPES,
     LOADED_LOGIN_INFO,
+    DOWNLOADED_SENSORS_FILE,
 } from "./action_types";
 
 import {
@@ -18,6 +19,7 @@ import {
 
 let recipeFilePath = 'recipes.json'
 let ingredientFilePath = 'ingredients.json'
+let sensorsFilePath = 'sensors.json'
 
 export function createIngredientsFile() {
     return function (dispatch, getState) {
@@ -151,6 +153,26 @@ export function deleteIngredient(payload) {
     }
 }
 
+// Login info
 export function setLoginInfo(payload) {
     return { type: LOADED_LOGIN_INFO, payload: payload }
 }
+
+// Sensors
+export function createSensorsFile() {
+    return function (dispatch, getState) {
+        let bucketName = getState().loginReducer.loginInfo.bucketName
+        let data = []
+        return s3Upload(data, sensorsFilePath, bucketName);
+    }
+}
+
+export function downloadSensors() {
+    return function(dispatch, getState) {
+        let bucketName = getState().loginReducer.loginInfo.bucketName
+        return s3Download(sensorsFilePath, bucketName)
+            .then(json => {
+                dispatch({ type: DOWNLOADED_SENSORS_FILE, payload: json });
+            });
+        };
+};

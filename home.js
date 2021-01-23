@@ -1,46 +1,57 @@
 import React from 'react'
+
 import { 
     View, 
     Text,
     TouchableHighlight,
     Image,
- } from 'react-native'
- 
- import Divider from './components/divider'
- import OutlineButton from './components/outline_button'
- 
- import styles from './styles'
- 
- import tempIcon from './icons/temperature-icon.jpg'
- import fsaIcon from './icons/fsa.jpg';
- 
+} from 'react-native'
+
+import { connect } from "react-redux";
+
+import Divider from './components/divider'
+import OutlineButton from './components/outline_button'
+import SensorTile from './components/sensor_tile'
+import Clock from './components/clock'
+
+import styles from './styles'
+
+import tempIcon from './icons/temperature-icon.jpg'
+import fsaIcon from './icons/fsa.jpg';
+
 let appName = "Kitchen Control"
 
-export default class Home extends React.Component {
+class Home extends React.Component {
 
     constructor(props) {
         super(props);
+
     }
 
     componentDidMount() {
-    }
+    }    
 
     renderTempControlSection() {
+
+        console.log("Sensor list:")
+        console.log(this.props.sensorList)
+
+        let sensorDisplay = []
+        this.props.sensorList.forEach(element => {
+            sensorDisplay.push( <SensorTile/> )
+        });
+
         return (
             <View style={styles.flexRowLeft}>
                 <Image
-                    style={{ width: 200, height: 200 }}
+                    style={{ width: 150, height: 150 }}
                     source={tempIcon}
                 />
-                
-                <View style={{ flexDirection: 'column', marginRight: 20, justifyContent: 'space-around' }} >
-                    <Text style={styles.textSubHeading}>
-                        Temp Monitor
-                    </Text>
 
-                    <OutlineButton  title="Location 1" onPress={() => this.props.navigation.navigate('Sensors') } 
-                        style={{ width: 200, height: 200 }}
-                    />
+                <View style={{ flexDirection: 'column', marginRight: 20, justifyContent: 'space-around' }} >
+                    <View style={{flexDirection: 'row'}}> 
+                        {sensorDisplay}             
+                    </View>
                 </View>
             </View>
         )
@@ -83,6 +94,8 @@ export default class Home extends React.Component {
 
                 <Divider/>
 
+                <Clock/>
+
                 {this.renderTempControlSection()}
                 
                 <Divider/>
@@ -97,3 +110,12 @@ export default class Home extends React.Component {
         )
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        loginInfo: state.loginReducer.loginInfo,
+        sensorList : state.sensorReducer.sensorList,
+    }
+}
+
+export default connect(mapStateToProps)(Home)

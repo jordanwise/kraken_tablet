@@ -120,7 +120,7 @@ function recipeReducer(state = initialState, action) {
         });
     }
 
-    if( action.type == DOWNLOADED_RECIPES ) {
+    if( action.type === DOWNLOADED_RECIPES ) {
         let downloaded_data = JSON.parse( JSON.parse(action.payload) );
 
         return Object.assign({}, state, {
