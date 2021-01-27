@@ -17,7 +17,8 @@ import Home from './home'
 import AllergenIngredientScreen from './allergen_ingredient'
 import AllergenRecipeScreen from './allergen_recipe'
 import AddNewRecipeScreen from './add_new_recipe'
-import SFBBCategory from './sfbb_category.js';
+import SFBBCategory from './sfbb_category'
+import SensorDataScreen from './sensor_data'
 
 // State
 import { connect } from "react-redux";
@@ -30,9 +31,12 @@ import {
     createRecipesFile,
 	downloadIngredients,
     downloadRecipes,
+} from "./state/actions"
+
+import{
     createSensorsFile,
     downloadSensors,
-} from "./state/actions"
+} from './state/sensor_actions'
 
 // Create navigation
 const AppNavigator = createStackNavigator(
@@ -43,7 +47,8 @@ const AppNavigator = createStackNavigator(
 		AllergenIngredient: AllergenIngredientScreen,
         AllergenRecipe: AllergenRecipeScreen,
 		AddNewRecipe: AddNewRecipeScreen,
-		SFBBCategory: SFBBCategory,
+        SFBBCategory: SFBBCategory,
+        SensorData: SensorDataScreen,
 	},
 	{
 		initialRouteName: "Home"
@@ -58,7 +63,6 @@ const persistenceKey = "persistenceKey"
 
 const persistNavigationState = async (navState) => {
 	try {
-		console.log("Moving...")
 		await AsyncStorage.setItem(persistenceKey, JSON.stringify(navState))
 	} catch (err) {
 		// handle the error according to your needs

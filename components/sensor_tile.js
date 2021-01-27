@@ -6,7 +6,12 @@ import {
     Text,
     StyleSheet,
     Image,
+    TouchableHighlight,
 } from 'react-native'
+
+import { withNavigation } from 'react-navigation';
+
+import * as utils from '../utils' 
 
 import batteryFullIcon from '../icons/sensor/battery_full_24px.png'
 import bluetoothIcon from '../icons/sensor/bluetooth_searching_24px.png'
@@ -40,7 +45,7 @@ const tileStyles = StyleSheet.create({
     }
 })
 
-export default class SensorTile extends React.Component {
+class SensorTile extends React.Component {
 
     // TODO: Update these tiles based on Amazon SNS (Simple Notification Service)
     // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/sns-examples-subscribing-unubscribing-topics.html
@@ -48,13 +53,38 @@ export default class SensorTile extends React.Component {
     constructor( props ) {
         super(props)
     }
+
+    componentDidMount() {
+        console.log( "Sensor tile mounted...")
+        console.log(this.props.sensor)
+    }
     
+    renderSensorName(data) {
+        let details = utils.parseSensorId(data.sensorId)
+        return (
+            <Text style={tileStyles.sensorTitle}>
+                {details.sensorName}
+            </Text>
+        )
+    }
+
     renderLastTemperatureReading( data ) {
-        return( "25.6" + "{'\u2103'}")
+        // let reading = "25.6" + "{'\u2103'}"
+        let reading = "25.6\u2103"
+        return (
+            <Text style={tileStyles.sensorTemp}>
+                {reading}
+            </Text>
+        )
     }
 
     renderLastUpdatedString( data ) {
-        return "1 minute ago";
+        let message = "1 minute ago";
+        return (
+            <Text>
+                {message}
+            </Text>
+        )
     }
 
     renderBatteryStatus(data) {
@@ -85,23 +115,27 @@ export default class SensorTile extends React.Component {
         )
     }
 
+    tilePressed() {        
+        console.log("pressed tile")
+        
+        this.props.navigation.navigate('SensorData', { sensor: this.props.sensor })        
+    }
+
     render() {
-        return( 
-            <View style={tileStyles.container}>
-                <Text style={tileStyles.sensorTitle}>
-                    SensorID
-                </Text>
-                <Text style={tileStyles.sensorTemp}>
-                    25.6{'\u2103'}
-                </Text>
-                <Text>
-                    { this.renderLastUpdatedString() }
-                </Text>
+        return(          
+            <TouchableHighlight onPress={() => this.tilePressed()}>
+                <View style={tileStyles.container}>
                 
-                { this.renderStatusIcons() }
-            </View>
+                    { this.renderSensorName( this.props.sensor )}
+                    { this.renderLastTemperatureReading()}
+                    { this.renderLastUpdatedString() }
+                
+                    { this.renderStatusIcons() }
+                </View>
+            </TouchableHighlight>
         )
     }
 
 }
 
+export default withNavigation(SensorTile)

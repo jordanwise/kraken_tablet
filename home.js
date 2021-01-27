@@ -38,7 +38,7 @@ class Home extends React.Component {
 
         let sensorDisplay = []
         this.props.sensorList.forEach(element => {
-            sensorDisplay.push( <SensorTile/> )
+            sensorDisplay.push( <SensorTile sensor={element} /> )
         });
 
         return (
