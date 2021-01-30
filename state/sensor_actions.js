@@ -37,7 +37,6 @@ export function downloadSensors() {
 export function downloadSensorData( sensor, date ) {
     return function(dispatch, getState) {
         let tableName = getState().loginReducer.loginInfo.tableName
-        let date = "2021.01.27"
 
         getDataFromDate( tableName, sensor.sensorId, date )
         .then( data => {
