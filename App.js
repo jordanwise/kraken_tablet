@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import * as apiCalls from './lamda_api_calls'
+import * as snsSetup from './sns_setup'
 
 import { writeFile, fileExists, readFile } from './data_sync'
 
@@ -80,12 +81,7 @@ class App extends React.Component {
 		let infoFileName = 'login_info.json'
 
 		apiCalls.getLoginData(this.state.activationText)
-		.then( json => {
-			// Write the json to state
-			store.dispatch( setLoginInfo( json ) );
-			console.log('returned json:')
-			console.log(json)
-			
+		.then( json => {		
 			fileExists( infoFileName )
 			.then ( res => {
 				if( !res ) {
@@ -98,6 +94,29 @@ class App extends React.Component {
 			})
 			.then( len => {
 				console.log("written " + len + " bytes to file " + infoFileName)
+
+				return snsSetup.createNotificationEndpoint()
+			})
+			.then( data => {
+				console.log(data)
+
+				json.notificationEndpointArn = data.EndpointArn
+				
+				return snsSetup.subscribeEndpointToTopic( data.EndpointArn, json.sensorListTopicArn )
+			})
+			.then( data => {
+				console.log(data)
+				console.log("Endpoint created and subcribed to notifications")
+				console.log("App activated")
+
+				// Add the endpoint info on the state
+				json.sensorListNotificationSubscription = data.SubscriptionArn
+
+				// Write the json to state
+				console.log('Saving login info:')
+				console.log(json)
+				store.dispatch( setLoginInfo( json ) );
+
 				this.setState({
 					loginInfoFound: true
 				})

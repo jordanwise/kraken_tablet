@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "904892965701",
+    "project_id": "kraken-8c400",
+    "storage_bucket": "kraken-8c400.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904892965701:android:bb42e0e59555ee7b6f542c",
+        "android_client_info": {
+          "package_name": "com.krakentablet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "904892965701-2ch0d9perm1ohqk54uo6sh3bcjj7ulbr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx9CB2J14hCAbUbj2bDZYKRwkbTfngnY8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "904892965701-2ch0d9perm1ohqk54uo6sh3bcjj7ulbr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

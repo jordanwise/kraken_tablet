@@ -41,6 +41,10 @@ class Home extends React.Component {
             sensorDisplay.push( <SensorTile sensor={element} /> )
         });
 
+        if( sensorDisplay.length === 0 ) {
+            sensorDisplay.push(<Text>No sensors assigned</Text>)
+        }
+
         return (
             <View style={styles.flexRowLeft}>
                 <Image

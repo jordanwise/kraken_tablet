@@ -24,6 +24,12 @@ import SensorDataScreen from './sensor_data'
 import { connect } from "react-redux";
 import store from "./state/store";
 
+// Notifications
+import messaging from '@react-native-firebase/messaging';
+
+// Components
+import { Alert } from 'react-native'
+
 import { s3CheckExists, s3Upload } from './data_sync'
 
 import {
@@ -119,6 +125,13 @@ class ConfiguredAppContainer extends React.Component {
         .then( () => {
             console.log("All data downloaded")
         })
+
+        const subscription = messaging().onMessage(async remoteMessage => {
+			Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+			console.log("Message:")
+			console.log(JSON.stringify(remoteMessage));
+		});
+
     }
     
 

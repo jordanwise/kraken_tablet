@@ -1,4 +1,5 @@
 {
+  "name": "krakentablet",
   "main": "index.js",
   "scripts": {
     "android": "react-native run-android",
@@ -15,6 +16,8 @@
     "@react-native-community/netinfo": "^5.9.9",
     "@react-native-community/progress-bar-android": "^1.0.4",
     "@react-native-community/progress-view": "^1.2.3",
+    "@react-native-firebase/app": "^10.7.0",
+    "@react-native-firebase/messaging": "^10.7.0",
     "amazon-cognito-identity-js": "^4.5.5",
     "appcenter": "^4.0.0",
     "appcenter-analytics": "^4.0.0",
