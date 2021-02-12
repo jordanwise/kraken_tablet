@@ -26,6 +26,7 @@ import store from "./state/store";
 
 // Notifications
 import messaging from '@react-native-firebase/messaging';
+import * as notificationManager from './notification_manager'
 
 // Components
 import { Alert } from 'react-native'
@@ -126,14 +127,15 @@ class ConfiguredAppContainer extends React.Component {
             console.log("All data downloaded")
         })
 
-        const subscription = messaging().onMessage(async remoteMessage => {
-			Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-			console.log("Message:")
-			console.log(JSON.stringify(remoteMessage));
+        this.messageListener = messaging().onMessage(async remoteMessage => {
+            notificationManager.parseMessage( remoteMessage )
 		});
 
     }
-    
+
+    componentWillUnmount() {
+        this.messageListener();
+    }
 
     async authenticate() {
         try {
