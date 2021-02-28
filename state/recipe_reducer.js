@@ -111,7 +111,7 @@ function recipeReducer(state = initialState, action) {
     }
 
     if (action.type === DOWNLOADED_INGREDIENTS) {
-        let downloaded_data = JSON.parse( JSON.parse(action.payload) );
+        let downloaded_data = JSON.parse(action.payload);
 
         console.log("Downloaded ingredients")
 
@@ -121,7 +121,7 @@ function recipeReducer(state = initialState, action) {
     }
 
     if( action.type === DOWNLOADED_RECIPES ) {
-        let downloaded_data = JSON.parse( JSON.parse(action.payload) );
+        let downloaded_data = JSON.parse(action.payload);
 
         return Object.assign({}, state, {
             recipes: state.recipes.concat(downloaded_data)
