@@ -24,10 +24,11 @@ export function getLoginData(uuid) {
     });
 }
 
-export function snsCreateEndpoint( platformApplicationArn, token ) {    
+export function snsCreateEndpoint( platformApplicationArn, token, userId ) {    
     const event = {
         platformApplicationArn: platformApplicationArn,
-        token: token
+        token: token,
+        userId: userId
     }
 
     const data = JSON.stringify(event);

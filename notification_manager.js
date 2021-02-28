@@ -11,4 +11,8 @@ export function parseMessage( message ) {
 
         store.dispatch( downloadSensors() )
     }
+    else {
+        // Data is from database change
+        console.log("sensor reading arrived")
+    }
 }

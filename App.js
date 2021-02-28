@@ -95,22 +95,32 @@ class App extends React.Component {
 			.then( len => {
 				console.log("written " + len + " bytes to file " + infoFileName)
 
-				return snsSetup.createNotificationEndpoint()
+				return snsSetup.createNotificationEndpoint( json.tableName )
 			})
 			.then( data => {
 				console.log(data)
 
 				json.notificationEndpointArn = data.EndpointArn
 				
-				return snsSetup.subscribeEndpointToTopic( data.EndpointArn, json.sensorListTopicArn )
+				return snsSetup.subscribeEndpointToTopic( json.notificationEndpointArn, json.sensorListTopicArn )
 			})
 			.then( data => {
 				console.log(data)
-				console.log("Endpoint created and subcribed to notifications")
-				console.log("App activated")
-
+				console.log("Sensor list endpoint created and subcribed to notifications")
+				
 				// Add the endpoint info on the state
 				json.sensorListNotificationSubscription = data.SubscriptionArn
+
+				return snsSetup.subscribeEndpointToTopic( json.notificationEndpointArn, json.databaseChangeTopicArn )
+			})
+			.then( data=> {
+				console.log(data)
+				console.log("Sensor list endpoint created and subcribed to notifications")
+
+				// Add the endpoint info on the state
+				json.databaseNotificationSubscription = data.SubscriptionArn
+
+				console.log("App activated")
 
 				// Write the json to state
 				console.log('Saving login info:')
