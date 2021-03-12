@@ -1,6 +1,7 @@
 import {
     DOWNLOADED_SENSORS_FILE,
     DOWNLOADED_SENSOR_DATE_DATA,
+    SENSOR_UPDATE,
 } from "./action_types";
 
 import {
@@ -42,5 +43,11 @@ export function downloadSensorData( sensor, date ) {
         .then( data => {
             dispatch({ type:DOWNLOADED_SENSOR_DATE_DATA, payload: data })
         })
+    }
+}
+
+export function sensorUpdate(data) {
+    return function( dispatch, getState) {
+        dispatch({ type:SENSOR_UPDATE, payload:data })
     }
 }

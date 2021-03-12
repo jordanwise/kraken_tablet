@@ -1,6 +1,6 @@
 import store from "./state/store";
 
-import { downloadSensors } from "./state/sensor_actions"
+import { downloadSensors, sensorUpdate } from "./state/sensor_actions"
 
 export function parseMessage( message ) {
     console.log("Received notification:")
@@ -14,5 +14,8 @@ export function parseMessage( message ) {
     else {
         // Data is from database change
         console.log("sensor reading arrived")
+        console.log(message.data)
+
+        store.dispatch( sensorUpdate(JSON.parse(message.data.default) ) )
     }
 }

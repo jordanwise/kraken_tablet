@@ -68,9 +68,14 @@ class SensorTile extends React.Component {
         )
     }
 
-    renderLastTemperatureReading( data ) {
+    renderLastTemperatureReading( sensor ) {
         // let reading = "25.6" + "{'\u2103'}"
         let reading = "25.6\u2103"
+
+        if( sensor.latest ) {
+            reading = sensor.latest.temperature + "\u2103"
+        }
+
         return (
             <Text style={tileStyles.sensorTemp}>
                 {reading}
@@ -78,8 +83,15 @@ class SensorTile extends React.Component {
         )
     }
 
-    renderLastUpdatedString( data ) {
-        let message = "1 minute ago";
+    renderLastUpdatedString( sensor ) {
+
+        let message = "---"
+        if( sensor.latest ) {
+            let date = new Date( sensor.latest.timestamp )
+
+            message = date.timeNow() + " " + date.today();
+        }
+        
         return (
             <Text>
                 {message}
@@ -127,8 +139,8 @@ class SensorTile extends React.Component {
                 <View style={tileStyles.container}>
                 
                     { this.renderSensorName( this.props.sensor )}
-                    { this.renderLastTemperatureReading()}
-                    { this.renderLastUpdatedString() }
+                    { this.renderLastTemperatureReading(this.props.sensor)}
+                    { this.renderLastUpdatedString( this.props.sensor ) }
                 
                     { this.renderStatusIcons() }
                 </View>
